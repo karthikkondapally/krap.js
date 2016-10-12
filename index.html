@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+ <html>
+  <head>
+     <script type="text/javascript" src="./krap.js">
+</script>
+<script type="text/css" src="./krap.css">
+</script> 
+   </head>
+   <body>
+<div id="pie" >
+</div>
+  <script>
+      var json =[
+          {oracle:[
+                  {profits:[
+                          {phones:1},
+                          {software:2}
+                  ]},
+                  {loss:[3]},
+                  {misc:[6]},
+          ]},
+          {amazon:[10]},
+          {google:[60]},
+          {microsoft:[20]}
+      ];
+       properties = {}
+      
+        properties['width'] = 300;
+        properties['height']=300;
+        properties['data']= [10,30,60]
+        properties['colours']= ['#38D3EE', '#C9D2D4', '#FF5A82'];
+    
+       chart.pie('pie',properties);
+ 
+       
+    
+       </script>
+   </body>
+ </html>
