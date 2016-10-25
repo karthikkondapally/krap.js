@@ -52,7 +52,22 @@ var krapUtil ={
     scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     return { x: rect.top + scrollTop, y: rect.left + scrollLeft };
 }
-}
+};
+
+var krapStats ={
+    calcRangeOnSorted : function (arr){
+     var len = arr.length;
+     var range = (arr[length-1]-arr[0])/(len-1);
+     return range;
+    },
+    
+    calcRangeOnNonSortedData : function (arr){
+     arr.sort();
+     var len = arr.length;
+     var range = (arr[length-1]-arr[0])/(len-1);
+     return range;
+    }
+};
 
 function generateArcSector(svg,cX,cY,radius,datum,colour,iniA,endA,sweep){
 cX = parseInt(cX);
@@ -173,12 +188,61 @@ var krapPie = {
     },
 };
 
-
-
-var axis = {
+var svg = {
+    svgObj : 'undefined',
+    generate : function(height,width){
+        this.svgObj =  fnSvgElement.createNewElement('svg')
+                    .addAttribute('width',width)
+                    .addAttribute('height',height)
+                    .toDomString();
+            return this.svgObj;
+    }
 };
 
 
+var axis = {
+    
+    
+    generateSimpleAxis : function(svgId,xcords,ycords,height,width){
+        var startX = (0.03)*width ;
+        var startY = (0.05)*height;
+        var oX = startX;
+        var oY = height-(0.1 * height);
+        var endX = width - (0.06 * width) ;
+        var endY = oY;
+        var lengthOfYAxis = oY-startY;
+        var lengthOfXAxis = endX-oX;
+        
+        this.generateX();
+        
+        var axisPath = pathGenerator.move(startX,startY)+' '+pathGenerator.lineTo(oX,oY)+' '+pathGenerator.move(oX,oY)+' '+pathGenerator.lineTo(endX,endY)+' '+pathGenerator.completePath();
+        var pathNode = fnSvgElement.createNewElement('path')
+			.addAttribute('d',axisPath)
+                        .addAttribute('stroke-width','1')
+                        .addAttribute('class','axis')
+                        .addAttribute('stroke','black')
+                        .addAttribute('data-name','test')
+                        .addAttribute('fill','none')
+                        .toDomString();
+                console.log(pathNode);
+        document.getElementById(svgId).appendChild(pathNode);
+    },
+    generateMesh : function(){
+        
+    } 
+};
+
+var pathGenerator = {
+  move : function(x,y){
+    return 'M'+x+','+y;  
+  },
+  lineTo : function (x,y){
+    return 'L'+x+','+y;  
+  },
+  completePath : function(){
+    return 'z';  
+  }
+};
 
 var chart = {
     pie: function (id,props) {

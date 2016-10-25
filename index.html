@@ -7,7 +7,9 @@
 </script> 
    </head>
    <body>
-<div id="pie" >
+<div id="pi" >
+    <svg id="pie">
+    </svg>
 </div>
   <script>
       var json =[
@@ -30,8 +32,8 @@
         properties['data']= [10,30,60]
         properties['colours']= ['#38D3EE', '#C9D2D4', '#FF5A82'];
     
-       chart.pie('pie',properties);
- 
+       //chart.pie('pie',properties);
+       axis.generateSimpleAxis('pie',0,0,400,400)
        
     
        </script>
