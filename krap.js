@@ -268,7 +268,10 @@ var axis = {
 			if(max%range==0)
 				scaleF=(max/range);
 			else
-				scaleF=(max/range)+1
+				scaleF=(max/range)+1;
+			while(){
+				
+			}
 			
 		}
 		else{
