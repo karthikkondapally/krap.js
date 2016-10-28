@@ -201,15 +201,19 @@ var svg = {
 
 var axis = {
     props: {
-        SX: 0,
-        SY: 0,
-        OX: 0,
-        OY: 0,
-        EX: 0,
-        EY: 0,
-        LOX: 0,
-        LOY: 0,
-        svg: ''
+        'SX': 0,
+        'SY': 0,
+        'OX': 0,
+        'OY': 0,
+        'EX': 0,
+        'EY': 0,
+        'LOX': 0,
+        'LOY': 0,
+        'svg': '',
+		'xdataRotation': 90,
+		'xCords' : [],
+		'yCords' : [],
+		'yTickLabels' : {}
     },
     generateXAxis: function () {
         var xPath = pathG.move(this.props.SX, this.props.SY) + ' ' + pathG.lineTo(this.props.OX, this.props.OY);
@@ -233,6 +237,7 @@ var axis = {
                 .addAttribute('fill', 'none')
                 .toDomString();
         this.props.svg.appendChild(pathObj);
+		
 
 
     },
@@ -246,11 +251,54 @@ var axis = {
         var lengthOfYAxis = this.props.LOY = oY - startY;
         var lengthOfXAxis = this.props.LOX = endX - oX;
     },
-    generateSimpleAxis: function (svgObj, xcords, ycords, height, width) {
+	
+	addYAxisTicks : function(){
+		    var x = this.props.SX;
+			var y = [];
+		if(this.props.yTickLabels == 'undefined')
+		{
+		var ycords = this.props.yCords;
+			var length=ycords.length; 
+			var oy = this.props.OY;
+			var range = krapStats.calcRangeOnNonSortedData(ycords);
+			var i=0;	
+			var max = ycords[length-1];
+			var iniT = ycords[0];
+			var scaleF =0;
+			if(max%range==0)
+				scaleF=(max/range);
+			else
+				scaleF=(max/range)+1
+			
+		}
+		else{
+
+			var oy = this.props.OY;
+			var y_text = [];
+			var yt = this.props.yTickLabels;
+			var loy = this.props.LOY;
+			for(var data in yt )
+			{
+				y_text.push(data);
+				var y_point = yt[data];
+				var ny = oy-(y_point*loy); 
+				y.push(ny);
+			}
+			
+		}
+		
+	},
+	
+    generateSimpleAxis: function (svgObj, xcords, ycords,yticks,xdataR,height, width) {
         this.props.svg = svgObj;
+		this.props.xCords = xcords;
+		this.props.yCords = ycords;
+		this.props.yTickLabels = yticks;
+		this.props.xdataRotation = xdataR;
         this.calculateAxis(width, height);
         this.generateXAxis();
         this.generateYAxis();
+		this.addYAxisTicks();
 
     },
     generateMesh: function () {
