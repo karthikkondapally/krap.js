@@ -11,3 +11,7 @@ and open the template in the editor.
 .conic:hover{
     opacity: 0.3;
 }
+
+.ylabel{
+    font-size: 100;
+}

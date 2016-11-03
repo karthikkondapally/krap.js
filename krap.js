@@ -57,27 +57,56 @@ var krapUtil = {
 var krapStats = {
     calcRangeOnSorted: function (arr) {
         var len = arr.length;
-        var range = (arr[length - 1] - arr[0]) / (len - 1);
+        var range = (arr[len-1] - arr[0]) / (len-1);
         return range;
     },
     calcRangeOnNonSortedData: function (arr) {
         arr.sort();
         var len = arr.length;
-        var range = (arr[length - 1] - arr[0]) / (len - 1);
+        var range = (arr[len-1] - arr[0]) / (len-1);
         return range;
     }
 };
+
+var set = {
+    text: function (x, y, text, style,tclass,font,fontSize) {
+        var t_node = fnSvgElement.createNewElement('text')
+                .addAttribute('x', x)
+                .addAttribute('y', y)
+                .addText(text)
+                .addAttribute('class',tclass)
+                .addAttribute('font-family',font)
+                .addAttribute('font-size',fontSize)
+                .toDomString();
+        return t_node;
+    },
+    tick: function(x1,x2,y2,stroke_size,stroke_color){
+        var tick = fnSvgElement.createNewElement('line')
+                .addAttribute('x1', x1)
+                .addAttribute('y1', y2)
+                .addAttribute('x2', x2)
+                .addAttribute('y2', y2)
+                .addAttribute('class', 'tick')
+                .addAttribute('stroke-width', stroke_size)
+                .addAttribute('stroke', stroke_color)
+                .addAttribute('fill', stroke_color)
+                .toDomString();
+        return tick;        
+    }
+    
+}
+
 
 function generateArcSector(svg, cX, cY, radius, datum, colour, iniA, endA, sweep) {
     cX = parseInt(cX);
     cY = parseInt(cY);
     radius = parseInt(radius);
     iniA = parseInt(iniA);
-    var x1 = cX + radius * Math.cos((iniA) * Math.PI / 180)
-    var y1 = cY + radius * Math.sin((iniA) * Math.PI / 180)
+    var x1 = cX + radius * Math.cos((iniA) * Math.PI / 180);
+    var y1 = cY + radius * Math.sin((iniA) * Math.PI / 180);
 
-    var x2 = cX + radius * Math.cos((endA) * Math.PI / 180)
-    var y2 = cY + radius * Math.sin((endA) * Math.PI / 180)
+    var x2 = cX + radius * Math.cos((endA) * Math.PI / 180);
+    var y2 = cY + radius * Math.sin((endA) * Math.PI / 180);
 
     var path = 'M' + cX + ',' + cY + ' L' + x1 + ',' + y1 + ' A' + radius + ',' + radius + ' 0 ' + sweep + ',1 ' + x2 + ',' + y2 + ' z';
     console.log(path);
@@ -184,7 +213,7 @@ var krapPie = {
         this.properties.data = dt;
         this.generate();
         return this;
-    },
+    }
 };
 
 var svg = {
@@ -210,10 +239,10 @@ var axis = {
         'LOX': 0,
         'LOY': 0,
         'svg': '',
-		'xdataRotation': 90,
-		'xCords' : [],
-		'yCords' : [],
-		'yTickLabels' : {}
+        'xdataRotation': 90,
+        'xCords': [],
+        'yCords': [],
+        'yTickLabels': []
     },
     generateXAxis: function () {
         var xPath = pathG.move(this.props.SX, this.props.SY) + ' ' + pathG.lineTo(this.props.OX, this.props.OY);
@@ -237,12 +266,9 @@ var axis = {
                 .addAttribute('fill', 'none')
                 .toDomString();
         this.props.svg.appendChild(pathObj);
-		
-
-
     },
     calculateAxis: function (width, height) {
-        var startX = this.props.SX = (0.03) * width;
+        var startX = this.props.SX = (0.1) * width;
         var startY = this.props.SY = (0.05) * height;
         var oX = this.props.OX = startX;
         var oY = this.props.OY = height - (0.1 * height);
@@ -250,58 +276,65 @@ var axis = {
         var endY = this.props.EY = oY;
         var lengthOfYAxis = this.props.LOY = oY - startY;
         var lengthOfXAxis = this.props.LOX = endX - oX;
+        console.log(width);
     },
-	
-	addYAxisTicks : function(){
-		    var x = this.props.SX;
-			var y = [];
-		if(this.props.yTickLabels == 'undefined')
-		{
-		var ycords = this.props.yCords;
-			var length=ycords.length; 
-			var oy = this.props.OY;
-			var range = krapStats.calcRangeOnNonSortedData(ycords);
-			var i=0;	
-			var max = ycords[length-1];
-			var iniT = ycords[0];
-			var scaleF =0;
-			if(max%range==0)
-				scaleF=(max/range);
-			else
-				scaleF=(max/range)+1;
-			while(){
-				
-			}
-			
-		}
-		else{
+    addYAxisTicks: function () {
+        var x = this.props.SX;
+        var y = [];
+        var y_text = [];
+        var oy = this.props.OY;
+        var len = this.props.yTickLabels.length 
 
-			var oy = this.props.OY;
-			var y_text = [];
-			var yt = this.props.yTickLabels;
-			var loy = this.props.LOY;
-			for(var data in yt )
-			{
-				y_text.push(data);
-				var y_point = yt[data];
-				var ny = oy-(y_point*loy); 
-				y.push(ny);
-			}
-			
-		}
-		
-	},
-	
-    generateSimpleAxis: function (svgObj, xcords, ycords,yticks,xdataR,height, width) {
+        if( len === 0)
+        {
+            var ycords = this.props.yCords;
+            var length = ycords.length;
+            var range = krapStats.calcRangeOnNonSortedData(ycords);
+            var i = 0;
+            var max = ycords[length - 1];
+            var iniT = ycords[0];
+            var scaleF = 0;
+            if (max % range === 0)
+                scaleF = (max / range);
+            else
+                scaleF = (max / range) + 1;
+            var a_diff = this.props.LOY / (scaleF-1);
+            console.log(a_diff+' '+scaleF);
+            var ny = oy;
+            for (var i = 0; i <scaleF; i++) {
+                y.push(ny);
+                ny = ny - a_diff;
+                y_text.push((range)*i+iniT);
+            }
+        } else {
+            var yt = this.props.yTickLabels;
+            var loy = this.props.LOY;
+            for (var data in yt)
+            {
+                y_text.push(data);
+                var y_point = yt[data];
+                var ny = oy - (y_point * loy);
+                y.push(ny);
+            }
+
+        }
+       for(var i in y){
+           this.props.svg.appendChild(set.tick(x-5,x-1,y[i],1,'black'));
+           var text = y_text[i];
+           var tlen = 3*text.toString().length;
+           this.props.svg.appendChild(set.text(x-(tlen+15),y[i],text,'', 'ylabel','verdana','8'));
+       }             
+    },
+    generateSimpleAxis: function (svgObj, xcords, ycords, yticks, xdataR, height, width) {
         this.props.svg = svgObj;
-		this.props.xCords = xcords;
-		this.props.yCords = ycords;
-		this.props.yTickLabels = yticks;
-		this.props.xdataRotation = xdataR;
+        this.props.xCords = xcords;
+        this.props.yCords = ycords;
+        this.props.yTickLabels = yticks;
+        this.props.xdataRotation = xdataR;
         this.calculateAxis(width, height);
         this.generateXAxis();
         this.generateYAxis();
-		this.addYAxisTicks();
+        this.addYAxisTicks();
 
     },
     generateMesh: function () {
@@ -345,7 +378,7 @@ var chart = {
 
 var krapBar = {
     props: {
-       'width': 400,
+        'width': 400,
         'height': 400,
         'data': {},
         'xCords': [],
@@ -375,7 +408,7 @@ var krapBar = {
         this.props.yCords = yCords;
         this.props.yCordsSorted = yCords.sort();
         this.props.svgObj = svg.generate(this.props.height, this.props.width);
-        window['axis'][this.props.axisType](this.props.svgObj, xCords, yCords, this.props.height, this.props.width);
+        window['axis'][this.props.axisType](this.props.svgObj, xCords, yCords,[],0, this.props.height, this.props.width);
         document.getElementById(id).appendChild(this.props.svgObj);
     }
 }; 
