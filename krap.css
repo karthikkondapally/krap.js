@@ -15,3 +15,14 @@ and open the template in the editor.
 .ylabel{
     font-size: 100;
 }
+
+.chartBar{
+    fill:steelblue;
+    stroke:black;
+    stroke-width:0.1;
+    stroke-opacity:0.1
+}
+.chartBar:hover{
+    fill:#F2635F;
+    opacity:0.7;
+}

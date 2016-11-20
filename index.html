@@ -3,14 +3,20 @@
   <head>
      <script type="text/javascript" src="./krap.js">
 </script>
-<script type="text/css" src="./krap.css">
-</script> 
+  <link rel="stylesheet" href="./krap.css">
+
    </head>
    <body>
-<div id="pie" >
+<div id="pie" width="600px" >
 
 </div>
-  <script>
+<div id="bar" >
+
+</div>
+<div id="bar2" >
+
+</div>
+       <script>
       var json =[
           {oracle:[
                   {profits:[
@@ -31,14 +37,29 @@
         properties['data']= [10,30,60]
         properties['colours']= ['#38D3EE', '#C9D2D4', '#FF5A82'];
     
-       //chart.pie('pie',properties);
+       chart.pie('pie',properties);
        //axis.generateSimpleAxis('pie',0,0,400,400)
        
        
           var  props = {
         'width': 300,
         'height': 300,
-        'data': {'apple':2,'oracle':1,'google':3,'tesla':6},
+        'data': {'apple':5,'oracle':10,'google':15,'tesla':20},
+        'xCords': [],
+        'yCords': [],
+        'yCordsSorted': [],
+        'divId': 'undefined',
+        'datumsPerScreen': 4,
+        'colours': {},
+        'barColours': 'blue',
+        'yTickLabels': {},
+        'svgObj': 'undefined',
+        'axisType': 'generateSimpleAxis'
+    };
+    var  props2 = {
+        'width': 300,
+        'height': 300,
+        'data': {'apple':2,'oracle':1,'google':15,'tesla':16},
         'xCords': [],
         'yCords': [],
         'yCordsSorted': [],
@@ -51,7 +72,9 @@
         'axisType': 'generateSimpleAxis'
     };
     
-    chart.bar('pie',props);
+    chart.bar('bar',props);
+    chart.bar('bar2',props2);
+
        </script>
    </body>
  </html>

@@ -61,10 +61,13 @@ var krapStats = {
         return range;
     },
     calcRangeOnNonSortedData: function (arr) {
-        arr.sort();
+        arr.sort(function(a,b){
+            return a-b;
+        });
+        console.log(arr);
         var len = arr.length;
         var range = (arr[len-1] - arr[0]) / (len-1);
-        return range;
+        return Math.round(range);
     }
 };
 
@@ -92,9 +95,19 @@ var set = {
                 .addAttribute('fill', stroke_color)
                 .toDomString();
         return tick;        
+    },
+    bar: function(x,y,barWidth,barHeight,barClass){
+        var bar = fnSvgElement.createNewElement('rect')
+                .addAttribute('x', x)
+                .addAttribute('y', y)
+                .addAttribute('width', barWidth)
+                .addAttribute('height', barHeight)
+                .addAttribute('class', barClass)
+                .toDomString();
+            return bar;
     }
     
-}
+};
 
 
 function generateArcSector(svg, cX, cY, radius, datum, colour, iniA, endA, sweep) {
@@ -242,7 +255,8 @@ var axis = {
         'xdataRotation': 90,
         'xCords': [],
         'yCords': [],
-        'yTickLabels': []
+        'yTickLabels': [],
+        'baseUnit' : 0
     },
     generateXAxis: function () {
         var xPath = pathG.move(this.props.SX, this.props.SY) + ' ' + pathG.lineTo(this.props.OX, this.props.OY);
@@ -298,14 +312,18 @@ var axis = {
                 scaleF = (max / range);
             else
                 scaleF = (max / range) + 1;
-            var a_diff = this.props.LOY / (scaleF-1);
-            console.log(a_diff+' '+scaleF);
+            var a_diff = this.props.LOY / (scaleF+1);
+            console.log(range+' '+a_diff+' '+scaleF);
+            
             var ny = oy;
-            for (var i = 0; i <scaleF; i++) {
-                y.push(ny);
+            y.push(ny);
+            y_text.push(iniT-range);
+            for (var i = 0; i <=scaleF; i++) {
                 ny = ny - a_diff;
+                y.push(ny);
                 y_text.push((range)*i+iniT);
             }
+            
         } else {
             var yt = this.props.yTickLabels;
             var loy = this.props.LOY;
@@ -323,7 +341,11 @@ var axis = {
            var text = y_text[i];
            var tlen = 3*text.toString().length;
            this.props.svg.appendChild(set.text(x-(tlen+15),y[i],text,'', 'ylabel','verdana','8'));
-       }             
+       }
+       console.log(y_text+' '+'text'+' '+y);
+       this.props.yTickLabels=y_text;
+       this.props.aDiff = a_diff/range;
+       this.props.baseUnit = y_text[0];
     },
     generateSimpleAxis: function (svgObj, xcords, ycords, yticks, xdataR, height, width) {
         this.props.svg = svgObj;
@@ -390,7 +412,34 @@ var krapBar = {
         'barColours': 'blue',
         'yTickLabels': {},
         'svgObj': 'undefined',
-        'axisType': 'generateSimpleAxis'
+        'axisType': 'generateSimpleAxis',
+        'aProps': {}
+    },
+    generateBars : function(start,end){
+        var L = axis.props.yTickLabels.length;
+        var max = axis.props.yTickLabels[L-1];
+        var LOY = axis.props.LOY;
+        var LOX = axis.props.LOX;
+        var oX =  axis.props.OX;
+        var oY =  axis.props.OY;
+        var bps = end-start+1;
+        var svg = this.props.svgObj;
+        var barWidth =  LOX/(2*bps);
+        var distBtwBar = LOX/(2*bps);
+        var x = oX+distBtwBar;
+        var y = oY;
+        console.log(max+'max'+' '+axis.props.yTickLabels[L-1]+' '+axis.props.yTickLabels[0]);
+        for(var i=start;i<=end;i++){
+            var barHeight = ((parseInt(this.props.yCords[i-1])-axis.props.baseUnit)*axis.props.aDiff);
+            barPosition = oY-barHeight;
+            var bar = set.bar(x,barPosition,barWidth,barHeight,'chartBar');
+                x=x+barWidth+distBtwBar;
+                console.log(x+' '+oY+' '+barHeight);
+            svg.appendChild(bar);
+        }
+        console.log(barWidth+' '+distBtwBar);
+        
+        
     },
     generate: function (id, properties) {
         this.props.divId = id;
@@ -408,7 +457,10 @@ var krapBar = {
         this.props.yCords = yCords;
         this.props.yCordsSorted = yCords.sort();
         this.props.svgObj = svg.generate(this.props.height, this.props.width);
-        window['axis'][this.props.axisType](this.props.svgObj, xCords, yCords,[],0, this.props.height, this.props.width);
+        window['axis'][this.props.axisType](this.props.svgObj, xCords, yCords,[],0, this.props.height, this.props.width);    
         document.getElementById(id).appendChild(this.props.svgObj);
+        this.props.aProps = axis.props;
+        this.generateBars(1,4);
+        //this.props.svgObj.addEventListener();
     }
 }; 
