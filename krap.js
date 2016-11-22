@@ -415,6 +415,9 @@ var krapBar = {
         'axisType': 'generateSimpleAxis',
         'aProps': {}
     },
+    dragSvg : function(event){
+        console.log(event);
+    },
     generateBars : function(start,end){
         var L = axis.props.yTickLabels.length;
         var max = axis.props.yTickLabels[L-1];
@@ -455,12 +458,13 @@ var krapBar = {
         }
         this.props.xCords = xCords;
         this.props.yCords = yCords;
-        this.props.yCordsSorted = yCords.sort();
+        this.props.yCordsSorted = Object.assign([],yCords);
         this.props.svgObj = svg.generate(this.props.height, this.props.width);
-        window['axis'][this.props.axisType](this.props.svgObj, xCords, yCords,[],0, this.props.height, this.props.width);    
+        window['axis'][this.props.axisType](this.props.svgObj, xCords, this.props.yCordsSorted,[],0, this.props.height, this.props.width);    
         document.getElementById(id).appendChild(this.props.svgObj);
         this.props.aProps = axis.props;
-        this.generateBars(1,4);
+        this.generateBars(1,this.props.datumsPerScreen);
+        this.props.svgObj.addEventListener('mousemove',this.dragSvg);
         //this.props.svgObj.addEventListener();
     }
 }; 
