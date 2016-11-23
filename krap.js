@@ -37,6 +37,12 @@ var fnSvgElement = {
         return this.newElement;
     }
 };
+var newObj ={
+	bar:function(){
+		var b = Object.assign({},krapBar);
+		return b;
+	}
+}
 
 var mEvent = {
 	
@@ -400,10 +406,12 @@ var chart = {
         krapPie.generate();
     },
     bar: function (id, props) {
-        for (var i in props) {
-            krapBar.props[i] = props[i];
+        var bar = newObj.bar();
+		
+		for (var i in props) {
+            bar.props[i] = props[i];
         }
-        krapBar.generate(id);
+        bar.generate(id);
 
 
     },
@@ -432,6 +440,7 @@ var krapBar = {
 		'prevPos': 0,
 		'start':0,
 		'end':0,
+		'length':0,
 		'groupBar':'undefined'
     },
 	removeBars:function(){
@@ -446,7 +455,7 @@ var krapBar = {
 			if(this.props.prevPos!=0){
 				var diff = (presentPos-this.props.prevPos);
 				
-				if(diff<-2){
+				if(diff<-2&&this.props.end<this.props.length){
 					console.log('left');
 					this.props.start= this.props.start+1;
 					this.props.end = this.props.end+1;
@@ -456,7 +465,7 @@ var krapBar = {
 										console.log('groups is '+this.props.svgObj)
 
 				}
-				if(diff>2){
+				if(diff>2&&this.props.start>=0){
 					console.log('right');
 					this.props.start= this.props.start-1;
 					this.props.end = this.props.end-1;
@@ -530,6 +539,7 @@ var krapBar = {
         }
         this.props.xCords = xCords;
         this.props.yCords = yCords;
+		this.props.length = yCords.length;
         this.props.yCordsSorted = Object.assign([],yCords);
         this.props.svgObj = svg.generate(this.props.height, this.props.width);
         window['axis'][this.props.axisType](this.props.svgObj, xCords, this.props.yCordsSorted,[],0, this.props.height, this.props.width);    
