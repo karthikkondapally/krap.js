@@ -38,6 +38,17 @@ var fnSvgElement = {
     }
 };
 
+var mEvent = {
+	
+	up:function(e){
+		console.log('up');
+	},
+	down:function(event,d){
+		d='down';
+		console.log('down');
+	}
+}
+
 
 var krapUtil = {
     calcTot: function (data) {
@@ -51,7 +62,10 @@ var krapUtil = {
                 scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
                 scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         return {x: rect.top + scrollTop, y: rect.left + scrollLeft};
-    }
+    },
+	getSubArray:function(arr,start,end){
+		return arr.slice(start,end+1);
+	}
 };
 
 var krapStats = {
@@ -413,33 +427,91 @@ var krapBar = {
         'yTickLabels': {},
         'svgObj': 'undefined',
         'axisType': 'generateSimpleAxis',
-        'aProps': {}
+        'aProps': {},
+		'down' : false,
+		'prevPos': 0,
+		'start':0,
+		'end':0,
+		'groupBar':'undefined'
     },
+	removeBars:function(){
+		var group = document.getElementsByClassName('bargroup')[0];
+		
+	},
     dragSvg : function(event){
-        console.log(event);
+        //console.log(event);
+		if(this.props.down == true){
+			console.log(event);
+			var presentPos = event.screenX;
+			if(this.props.prevPos!=0){
+				var diff = (presentPos-this.props.prevPos);
+				
+				if(diff<-2){
+					console.log('left');
+					this.props.start= this.props.start+1;
+					this.props.end = this.props.end+1;
+					console.log('test'+this.props.groupBar)
+					this.props.svgObj.removeChild(this.props.groupBar);
+					this.generateBars(this.props.start,this.props.end);
+										console.log('groups is '+this.props.svgObj)
+
+				}
+				if(diff>2){
+					console.log('right');
+					this.props.start= this.props.start-1;
+					this.props.end = this.props.end-1;
+					console.log('test'+this.props.groupBar)
+					this.props.svgObj.removeChild(this.props.groupBar);
+					this.generateBars(this.props.start,this.props.end);
+										console.log('groups is '+this.props.svgObj)
+
+				}
+			}
+			this.props.prevPos= presentPos
+		}
     },
+	mousedown : function(event){
+		
+		this.props.down=true;
+		console.log(this.props.down);
+	},
+	mouseup : function(event){
+		this.props.down=false;
+	console.log(this.props.down);
+	},
+	test:function(event){
+		console.log(event);
+	},
     generateBars : function(start,end){
-        var L = axis.props.yTickLabels.length;
-        var max = axis.props.yTickLabels[L-1];
-        var LOY = axis.props.LOY;
-        var LOX = axis.props.LOX;
-        var oX =  axis.props.OX;
-        var oY =  axis.props.OY;
+		console.log('start and end'+start+' '+end+' '+this.props.aProps.baseUnit)
+        var L = this.props.aProps.yTickLabels.length;
+        var max = this.props.aProps.yTickLabels[L-1];
+        var LOY = this.props.aProps.LOY;
+        var LOX = this.props.aProps.LOX;
+        var oX =  this.props.aProps.OX;
+        var oY =  this.props.aProps.OY;
         var bps = end-start+1;
         var svg = this.props.svgObj;
         var barWidth =  LOX/(2*bps);
         var distBtwBar = LOX/(2*bps);
         var x = oX+distBtwBar;
         var y = oY;
-        console.log(max+'max'+' '+axis.props.yTickLabels[L-1]+' '+axis.props.yTickLabels[0]);
+        console.log(max+'max'+' '+this.props.aProps.yTickLabels[L-1]+' '+this.props.aProps.yTickLabels[0]);
+		var group = fnSvgElement.createNewElement('g')
+					.addAttribute('class','bargroup')
+					.toDomString();
+					console.log('group is' +group);
+					
         for(var i=start;i<=end;i++){
-            var barHeight = ((parseInt(this.props.yCords[i-1])-axis.props.baseUnit)*axis.props.aDiff);
+            var barHeight = ((parseInt(this.props.yCords[i-1])-this.props.aProps.baseUnit)*this.props.aProps.aDiff);
             barPosition = oY-barHeight;
             var bar = set.bar(x,barPosition,barWidth,barHeight,'chartBar');
                 x=x+barWidth+distBtwBar;
                 console.log(x+' '+oY+' '+barHeight);
-            svg.appendChild(bar);
+            group.appendChild(bar);
         }
+		this.props.groupBar = group;
+		svg.appendChild(group);
         console.log(barWidth+' '+distBtwBar);
         
         
@@ -464,7 +536,11 @@ var krapBar = {
         document.getElementById(id).appendChild(this.props.svgObj);
         this.props.aProps = axis.props;
         this.generateBars(1,this.props.datumsPerScreen);
-        this.props.svgObj.addEventListener('mousemove',this.dragSvg);
-        //this.props.svgObj.addEventListener();
+		this.props.start=1;
+		this.props.end=this.props.datumsPerScreen;
+		  //this.props.svgObj.addEventListener('drag',this.test.bind(this));
+        this.props.svgObj.addEventListener('mousemove',this.dragSvg.bind(this));
+		this.props.svgObj.addEventListener('mousedown',this.mousedown.bind(this));
+        this.props.svgObj.addEventListener('mouseup',this.mouseup.bind(this));
     }
 }; 
