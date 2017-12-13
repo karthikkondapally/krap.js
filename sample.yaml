@@ -1,4 +1,12 @@
 openapi: "3.0.0"
+components:
+  schemas:
+    User:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
 info:
   version: 1.0.0
   title: Swagger Petstore
