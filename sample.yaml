@@ -134,3 +134,9 @@ components:
           type: integer
         name:
           type: string
+    Userab:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string      
