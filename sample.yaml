@@ -50,30 +50,30 @@ paths:
         default:
           description: unexpected error
           content: 
-			  'application/json':
-				schema:
-				  $ref: '#/components/schemas/User'
-				examples:
-				  user:
-				summary: User Example
-				externalValue: 'http://foo.bar/examples/user-example.json'
-			  'application/xml':
-				schema:
-				  $ref: '#/components/schemas/User'
-				examples:
-				  user:
-				summary: User Example in XML
-				externalValue: 'http://foo.bar/examples/user-example.xml'
-			  'text/plain':
-				examples:
-				  user:
-				summary: User example in text plain format
-				externalValue: 'http://foo.bar/examples/user-example.txt'
-			  '*/*':
-				examples:
-				  user: 
-				summary: User example in other format
-				externalValue: 'http://foo.bar/examples/user-example.whatever'
+              'application/json':
+                schema:
+                  $ref: '#/components/schemas/User'
+                examples:
+                  user:
+                    summary: User Example
+                    externalValue: 'http://foo.bar/examples/user-example.json'
+              'application/xml':
+                schema:
+                  $ref: '#/components/schemas/User'
+                examples:
+                  user:
+                    summary: User Example in XML
+                    externalValue: 'http://foo.bar/examples/user-example.xml'
+              'text/plain':
+                examples:
+                  user:
+                    summary: User example in text plain format
+                    externalValue: 'http://foo.bar/examples/user-example.txt'
+              '*/*':
+                examples:
+                  user: 
+                    summary: User example in other format
+                    externalValue: 'http://foo.bar/examples/user-example.whatever'
   /pets/{petId}:
     get:
       summary: Info for a specific pet
